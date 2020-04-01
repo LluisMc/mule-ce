@@ -1,5 +1,12 @@
 FROM openjdk:8-jdk-alpine
 
+# Define arguments to build image
+ARG REPOSITORY_OWNER
+ARG REPOSITORY_NAME
+ARG RELEASE_VERSION
+ARG APP_NAME
+ARG APP_VERSION
+
 # Define environment variables.
 ENV BUILD_DATE=12082019
 ENV MULE_HOME=/opt/mule
@@ -45,8 +52,10 @@ RUN cd ~ && wget https://repository-master.mulesoft.org/nexus/content/repositori
     tar xvzf ~/mule-standalone-${MULE_VERSION}.tar.gz && \
     rm ~/mule-standalone-${MULE_VERSION}.tar.gz
 
-# Define mount points.
-VOLUME ["${MULE_HOME}/logs", "${MULE_HOME}/conf", "${MULE_HOME}/apps", "${MULE_HOME}/domains"]
+#Download Mule application jar
+RUN cd ~ && wget https://github.com/${REPOSITORY_OWNER}/${REPOSITORY_NAME}/releases/download/${RELEASE_VERSION}/${APP_NAME}-${APP_VERSION}-mule-application.jar && \
+    cd /opt/mule/apps && \
+    mv ~/${APP_NAME}-${APP_VERSION}-mule-application.jar .
 
 # Define working directory.
 WORKDIR ${MULE_HOME}
